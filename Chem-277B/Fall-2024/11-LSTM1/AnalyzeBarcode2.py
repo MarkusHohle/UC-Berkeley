@@ -15,10 +15,11 @@ from functools import lru_cache
 from Bio import AlignIO, SeqIO, Seq
 from keras import optimizers
 
-from keras.layers import LSTM
+from keras.layers import LSTM, TimeDistributed
 from keras.models import Sequential
 from keras.losses import categorical_crossentropy
-from keras.layers import Dense, Flatten, Conv2D, AveragePooling2D
+from keras.layers import Dense, Flatten, Conv2D
+from keras.layers import Flatten, Conv1D, MaxPooling1D
 
 from sklearn.metrics import confusion_matrix
 
@@ -35,6 +36,12 @@ from sklearn.metrics import confusion_matrix
 #
 # A = Analyzer(Ncut = 4000) #reads fasta file
 # A.RunLSTM(Nepochs = 40)   #runs simple LSTM for reduced dataset (computational reasons)
+# A.EvalModel()             #plots confusion map and entropy
+#
+#or
+#
+# A = Analyzer(Ncut = 4000) #reads fasta file
+# A.RunLSTMCNN(Nepochs = 40)#runs simple LSTM for reduced dataset (computational reasons)
 # A.EvalModel()             #plots confusion map and entropy
 
 ###helper functions############################################################
@@ -371,6 +378,69 @@ class Analyzer():
         #######################################################################
         
         self.out = out
+ 
+    
+ 
+    @lru_cache(maxsize = None)
+    def RunLSTMCNN(self, Nepochs = 200, n_neurons = 100, batch_size = 400):
+        
+        X                                 = self.X_train
+        Y                                 = self.Y_onehot_train
+        
+        #####reducing X in order to make it computationally feasible###########
+        [N_sample, _, _] = X.shape
+        idx              = np.random.choice(N_sample, size = 1000,\
+                                            replace = False)
+        X = X[idx,:500,:]
+        Y = Y[idx,:]
+        #######################################################################
+        
+        [N_sample, LengthSeq, N_features] = X.shape
+        
+        model = Sequential()
+        model.add(Conv1D(filters = 64, kernel_size = 3,\
+                                         activation = 'relu',\
+                           input_shape = (LengthSeq, N_features)))
+        model.add(MaxPooling1D(pool_size = 2))
+        model.add(LSTM(n_neurons, activation = 'tanh', return_sequences=False))
+        
+        model.add(Dense(self.Nclass, activation = 'softmax'))
+        
+        opt = optimizers.Adam()
+        model.compile(loss = 'categorical_crossentropy', optimizer = opt,\
+                      metrics=['accuracy'])
+        
+        model.summary()
+        
+        print('running model...')
+        out = model.fit(X, Y, epochs = Nepochs, batch_size = batch_size,\
+                    validation_split = 0.2, #validation_data = (ValX, ValY),\
+                    verbose = 2, shuffle = False)
+        print('...fit completed')
+        
+        
+        #plotting #############################################################
+        plt.plot(out.history['accuracy'])
+        plt.plot(out.history['val_accuracy'])
+        plt.title('model accuracy')
+        plt.ylabel('accuracy')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'val'], loc = 'upper left')
+        plt.savefig('training results.pdf')
+        plt.show()
+
+        plt.plot(out.history['loss'])
+        plt.plot(out.history['val_loss'])
+        plt.title('model loss')
+        plt.ylabel('loss')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'val'], loc = 'upper left')
+        plt.savefig('training loss.pdf')
+        plt.show()
+        #######################################################################
+        
+        self.out     = out
+        self.X_train = self.X_train[:,:500,:]
         
     @lru_cache(maxsize = None)
     def EvalModel(self):
