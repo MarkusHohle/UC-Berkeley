@@ -5,10 +5,10 @@ Created on Wed Nov 20 00:25:35 2024
 @author: MMH_user
 """
 
-n_neurons  = 400
+n_neurons  = 100
 n_epochs   = 200
-dt_past    = 20
-dt_futu    = 8
+dt_past    = 30
+dt_futu    = 10
 n_features = 1
 n_sample   = 1
 
@@ -27,7 +27,7 @@ TrainX, TrainY = X[:cut], Y[:cut]
 TestX,   TestY = X[cut:], Y[cut:]
 
 M1 = KerasLSTM(dt_past, n_features, dt_futu, n_neurons)
-M1.Run(TrainX, TrainY, n_epochs)#285 seconds
+M1.Run(TrainX, TrainY, n_epochs)#66 seconds
 M1.Evaluate(TestX, t, Y_tnorm)
 
 
@@ -40,13 +40,13 @@ print("Using device:", device)
 device = 'cpu'
 
 from Torch import *
-M2 = TorchLSTM(device, dt_past, n_stack, n_features, dt_futu)
-M2.Run(TrainX, TrainY, n_epochs)#11sec
+M2 = TorchLSTM(device, dt_past, n_stack, n_features, dt_futu, n_neurons)
+M2.Run(TrainX, TrainY, n_epochs)#13sec
 M2.Evaluate(TestX, t, Y_tnorm)
 
 #now: same with CUDA:
-M3 = TorchLSTM('cuda', dt_past, n_stack, n_features, dt_futu)
-M3.Run(TrainX, TrainY, n_epochs)#3sec
+M3 = TorchLSTM('cuda', dt_past, n_stack, n_features, dt_futu, n_neurons)
+M3.Run(TrainX, TrainY, n_epochs)#4.5sec
 M3.Evaluate(TestX, t, Y_tnorm)
 
 
