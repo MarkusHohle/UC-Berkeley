@@ -39,7 +39,7 @@ def AnalyzeMoleculesLogReg():
     
     scaler = MinMaxScaler(feature_range=(0, 1))
     TrainS = scaler.fit_transform(Train.drop('label', axis = 1))
-    TestS  = scaler.fit_transform(Test.drop('label', axis = 1))
+    TestS  = scaler.transform(Test.drop('label', axis = 1))
     
     #scaling returns an array, but we need a dataframe for the fit routine
     TrainS = pd.DataFrame(TrainS, columns = Train.columns[:-1])
