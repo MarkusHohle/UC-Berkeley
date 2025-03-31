@@ -23,14 +23,14 @@ collections.Iterable = collections.abc.Iterable
 
 class SegmentMyImages():
     
-    def __init__(self, my_path, n_classes = 51, input_height = 400,\
-                                                          input_width = 600):
+    def __init__(self, my_path = r"C:/my_path/data set/",\
+                     n_classes = 51, input_height = 400, input_width = 600):
         
         #checkpoints is for saving the weights and recover model
         self.checkpoint_path = my_path + r"checkpoints/"
 
         #calling a pretrained segmentation CNN
-        model = vgg_unet(n_classes     = n_classes,\
+        model = unet(n_classes     = n_classes,\
                          input_height  = input_height,\
                          input_width   = input_height)
             
