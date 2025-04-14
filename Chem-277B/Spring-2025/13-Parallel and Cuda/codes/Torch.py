@@ -12,6 +12,43 @@ import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import MinMaxScaler
 
+########usage##################################################################
+# from Torch import *
+
+# t, Y_tnorm = GenerateData()
+
+# n_neurons  = 100
+# n_epochs   = 200
+# dt_past    = 30
+# dt_futu    = 10
+# n_features = 1
+# n_sample   = 1
+
+# n_stack    = 3
+
+# cut  = 180
+
+# [X, Y]         = prepare_data(Y_tnorm, dt_past, dt_futu)
+# TrainX, TrainY = X[:cut], Y[:cut]
+# TestX,   TestY = X[cut:], Y[cut:]
+
+
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# print("Using device:", device)
+
+# #for now:
+# device = 'cpu'
+
+# from Torch import *
+# M2 = TorchLSTM(device, dt_past, n_stack, n_features, dt_futu, n_neurons)
+# M2.Run(TrainX, TrainY, n_epochs)#13sec
+# M2.Evaluate(TestX, t, Y_tnorm)
+
+# #now: same with CUDA:
+# M3 = TorchLSTM('cuda', dt_past, n_stack, n_features, dt_futu, n_neurons)
+# M3.Run(TrainX, TrainY, n_epochs)#4.5sec
+# M3.Evaluate(TestX, t, Y_tnorm)
+###############################################################################
 
 #############helper functions##################################################
 def my_timer(my_function):
@@ -46,6 +83,14 @@ def GenerateData():
     return t, Y_tnorm
 ###############################################################################
 
+###############################################################################
+def prepare_data(data, n_past, n_future):
+    x, y = [], []
+    for i in range(n_past, len(data) - n_future + 1):
+        x.append(data[i - n_past:i])
+        y.append(data[i:i + n_future])
+    return np.array(x), np.array(y)
+###############################################################################
 
 #######actual code: the model##################################################
 class LSTMModel(nn.Module):
@@ -72,13 +117,13 @@ class LSTMModel(nn.Module):
         device = self.device
         
         # Initialize hidden state with zeros
-        h0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim).requires_grad_()
+        h0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim)
         h0 = h0.to(device)
         # Initialize cell state
-        c0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim).requires_grad_()
+        c0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim)
         c0 = c0.to(device)
-        # Detach the gradients to prevent backpropagation through time
-        out, (hn, cn) = self.lstm(x, (h0.detach(), c0.detach()))
+
+        out, (hn, cn) = self.lstm(x, (h0, c0))
         # Reshaping the outputs for the fully connected layer
         out = self.fc(out[:, -1, :])
         

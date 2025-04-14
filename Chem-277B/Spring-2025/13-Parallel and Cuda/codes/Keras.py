@@ -14,6 +14,32 @@ from keras.layers import Dense
 from keras.models import Sequential
 from sklearn.preprocessing import MinMaxScaler
 
+#######usage###################################################################
+# from Keras import *
+
+# t, Y_tnorm = GenerateData()
+
+# n_neurons  = 100
+# n_epochs   = 200
+# dt_past    = 30
+# dt_futu    = 10
+# n_features = 1
+# n_sample   = 1
+
+# n_stack    = 3
+
+# cut  = 180
+
+# [X, Y]         = prepare_data(Y_tnorm, dt_past, dt_futu)
+# TrainX, TrainY = X[:cut], Y[:cut]
+# TestX,   TestY = X[cut:], Y[cut:]
+
+
+# K = KerasLSTM(dt_past, n_features, dt_futu, n_neurons)
+# K.Run(TrainX, TrainY)
+# K.Evaluate(TestX, t, Y_tnorm)
+###############################################################################
+
 
 #############helper functions##################################################
 def my_timer(my_function):
@@ -48,6 +74,14 @@ def GenerateData():
     return t, Y_tnorm
 ###############################################################################
 
+###############################################################################
+def prepare_data(data, n_past, n_future):
+    x, y = [], []
+    for i in range(n_past, len(data) - n_future + 1):
+        x.append(data[i - n_past:i])
+        y.append(data[i:i + n_future])
+    return np.array(x), np.array(y)
+###############################################################################
 
 #######actual code#############################################################
 class KerasLSTM():

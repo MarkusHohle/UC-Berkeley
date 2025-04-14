@@ -61,7 +61,7 @@ class Parallel_MAP():
     @my_timer
     def Serial(self, list_filenames: list) -> list:
         
-        All = list(np.zeros(len(list_filenames)))
+        All = [None]*len(list_filenames)
         
         for i, List in enumerate(list_filenames):
             All[i] = MyFun(List)

@@ -10,7 +10,7 @@ Created on Tue Dec  5 16:40:25 2023
 import numpy as np
 import pandas as pd
 
-n  = 50#100
+n  = 100#50#100
 m  = 5
 t  = np.arange(0,100,0.001)
 lt = len(t)
@@ -35,5 +35,5 @@ for i in range(m):
     Sdf = pd.DataFrame(St, columns = cols)
     
     Sdf.to_excel('Data_set_' + str(i) + '.xlsx')
-    #Sdf.to_csv('Data_set_' + str(i) + '.csv')
+    Sdf.to_csv('Data_set_' + str(i) + '.csv')
 
