@@ -100,13 +100,17 @@ class LSTMModel(nn.Module):
         super(LSTMModel, self).__init__()
         
         # LSTM layer
-        lstm = nn.LSTM(input_dim, hidden_dim, layer_dim,\
-                            batch_first = True)
-        # Fully connected layer
-        fc = nn.Linear(hidden_dim, output_dim)
+        lstm = nn.LSTM(input_dim, hidden_dim, layer_dim, batch_first = True)
+        #setting batch_first = True makes LSTM to expect data of shape
+        #(time, dt_past, n_features)
+        
+        
+        # fully connected layer
+        fc = nn.Linear(hidden_dim, output_dim*input_dim)
         
         self.hidden_dim = hidden_dim
         self.layer_dim  = layer_dim
+        self.output_dim = output_dim
         
         self.lstm       = lstm.to(device)
         self.fc         = fc.to(device)
@@ -115,19 +119,13 @@ class LSTMModel(nn.Module):
     def forward(self, x):
         
         device = self.device
-        
-        # Initialize hidden state with zeros
-        h0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim)
-        h0 = h0.to(device)
-        # Initialize cell state
-        c0 = torch.zeros(self.layer_dim, x.size(0), self.hidden_dim)
-        c0 = c0.to(device)
 
-        out, (hn, cn) = self.lstm(x, (h0, c0))
+        out, (hn, cn) = self.lstm(x)
         # Reshaping the outputs for the fully connected layer
-        out = self.fc(out[:, -1, :])
+        out  = self.fc(out[:, -1, :])
+        pred = out.view(-1, self.output_dim, x.shape[2])
         
-        return out
+        return pred
 
 
 ###############################################################################
@@ -136,8 +134,11 @@ class LSTMModel(nn.Module):
 #######actual code: main#######################################################
 class TorchLSTM():
     
-    def __init__(self, device, dt_past, n_stack, n_features, dt_futu,\
+    def __init__(self, device, n_stack, n_features, dt_futu,\
                  n_neurons = 100):
+        
+        #expected shape
+        #(time, dt_past, n_features)
     
         model     = LSTMModel(input_dim = n_features, hidden_dim = n_neurons,\
                               layer_dim = n_stack, output_dim = dt_futu,\
@@ -153,16 +154,10 @@ class TorchLSTM():
     @my_timer    
     def Run(self, TrainX, TrainY, n_epochs = 100):
         
-        model = self.model
+        model  = self.model
         
-        #reshaping so that PyTorch understands the shapes
-        TrainY = TrainY[:,0]
-        
-        TrainX = TrainX.reshape((TrainX.shape[0], TrainX.shape[1]))
-        TrainY = TrainY.reshape((TrainY.shape[0]))
-
-        TrainX = torch.tensor(TrainX[:, :, None], dtype=torch.float32)
-        TrainY = torch.tensor(TrainY[:, None], dtype=torch.float32)
+        TrainX = torch.tensor(TrainX, dtype=torch.float32)
+        TrainY = torch.tensor(TrainY, dtype=torch.float32)
 
         TrainX = TrainX.to(self.device)
         TrainY = TrainY.to(self.device)
@@ -178,8 +173,10 @@ class TorchLSTM():
         # Training loop
         for epoch in range(n_epochs):
             
+            model.train()
+            
             outputs = model(TrainX)
-            optimizer.zero_grad()
+            optimizer.zero_grad()#resetting gradient for each new batch
             loss = criterion(outputs, TrainY)
             loss.backward()
             optimizer.step()
@@ -196,8 +193,8 @@ class TorchLSTM():
         
     def Evaluate(self, TestX, t, Y_tnorm):
         
-        TestX = TestX.reshape((TestX.shape[0], TestX.shape[1]))
-        TestX = torch.tensor(TestX[:, :, None], dtype=torch.float32)
+        #TestX = TestX.reshape((TestX.shape[0], TestX.shape[1]))
+        TestX = torch.tensor(TestX, dtype=torch.float32)
         TestX = TestX.to(self.device)
 
         
