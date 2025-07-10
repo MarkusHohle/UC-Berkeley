@@ -9,6 +9,8 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+#a comment
+
 NT   = ['A', 'C', 'G', 'T']
 Code = [[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]] 
 
