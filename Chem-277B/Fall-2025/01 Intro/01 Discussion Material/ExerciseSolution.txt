@@ -1,0 +1,27 @@
+import numpy as np
+
+class Encoder():
+    
+    def __init__(self):
+        
+        NT   = 'ACGT'
+        Code = [[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]] 
+        
+        Dict = {key: value for key, value in zip(NT,Code)}
+        
+        self.Enc = lambda Sequence: [Dict[s] for s in Sequence]
+        
+        
+    def Encode(self, Sequence):
+        
+        return np.array(self.Enc(Sequence)).transpose()
+        
+class Map(Encoder): #combining inheritance, super & mapping
+    
+    def __init__(self):
+        super().__init__()
+    
+
+    def run(self, S):
+        
+        return list(map(super().Encode, S))
