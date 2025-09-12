@@ -4,21 +4,77 @@ Created on Tue Oct 11 08:58:07 2022
 
 @author: MMH_user
 """
+
 """
 function performs Bayesian Model Selection (Chapt 4.3, D. S. Sivia, Data 
 Analysis) with D_1 vs D_2 example
 
-input: i = 0, 2, ... 5 refering to the data set we wanna look at
 
 output:
 rho    = P(data comes from ONE population regarding mean and variance|data)/
-        P(data comes from TWO different populations regarding mean and 
-        variance|data)
+         P(data comes from TWO different populations regarding mean and 
+         variance|data)
 
 p      = ordinary p-val from two-sample, two-tailed, unpooled t-test 
-     (as comparison)
+         (as comparison), returns t-value and p-value
 
-Pmeans = P(mean_D_1>mean_D_2|data)
+[Pmeans, 1 - Pmeans] = [P(mean_D_1>mean_D_2|data), P(mean_D_1<mean_D_2|data)]
+"""
+
+"""
+usage:
+    #different mean, same sigma, changing Ns
+    M = mean_var_analysis_example(N_1 = 15, N_2 = 10, mu_1 = 1, mu_2 = 3, sigma_1 = 1, sigma_2 = 1)
+    M.T_Test() #two tailed t-test
+    M.ModelSelection() #D vs D1  and D2
+    M.P_Means()
+    
+    
+    M = mean_var_analysis_example(N_1 = 25, N_2 = 20, mu_1 = 1, mu_2 = 3, sigma_1 = 1, sigma_2 = 1)
+    M.T_Test() #two tailed t-test
+    M.ModelSelection() #D vs D1  and D2
+    M.P_Means()
+    
+    #--------------------------------------------------------------------------
+    #different sigma
+    M = mean_var_analysis_example(N_1 = 15, N_2 = 10, mu_1 = 1, mu_2 = 3, sigma_1 = 1, sigma_2 = 1)
+    M.T_Test() #two tailed t-test
+    M.ModelSelection() #D vs D1  and D2
+    M.P_Means()
+    
+    M = mean_var_analysis_example(N_1 = 15, N_2 = 10, mu_1 = 1, mu_2 = 3, sigma_1 = 2, sigma_2 = 1)
+    M.T_Test() #two tailed t-test
+    M.ModelSelection() #D vs D1  and D2
+    M.P_Means()
+    
+    #here, t-test often fails since it only looks for the means
+    M = mean_var_analysis_example(N_1 = 15, N_2 = 10, mu_1 = 1, mu_2 = 3, sigma_1 = 6, sigma_2 = 1)
+    M.T_Test() #two tailed t-test
+    M.ModelSelection() #D vs D1  and D2
+    M.P_Means()
+    
+    #--------------------------------------------------------------------------
+    #different mu
+    M = mean_var_analysis_example(N_1 = 15, N_2 = 10, mu_1 = 1, mu_2 = 1, sigma_1 = 1, sigma_2 = 1)
+    M.T_Test() #two tailed t-test
+    M.ModelSelection() #D vs D1  and D2
+    M.P_Means()
+    
+    M = mean_var_analysis_example(N_1 = 15, N_2 = 10, mu_1 = 1, mu_2 = 2, sigma_1 = 1, sigma_2 = 1)
+    M.T_Test() #two tailed t-test
+    M.ModelSelection() #D vs D1  and D2
+    M.P_Means()
+    
+    M = mean_var_analysis_example(N_1 = 15, N_2 = 10, mu_1 = 1, mu_2 = 3, sigma_1 = 1, sigma_2 = 1)
+    M.T_Test() #two tailed t-test
+    M.ModelSelection() #D vs D1  and D2
+    M.P_Means()
+    
+    #swap mus
+    M = mean_var_analysis_example(N_1 = 15, N_2 = 10, mu_1 = 3, mu_2 = 1, sigma_1 = 1, sigma_2 = 1)
+    M.T_Test() #two tailed t-test
+    M.ModelSelection() #D vs D1  and D2
+    M.P_Means()
 """
 
 import matplotlib.pyplot as plt
