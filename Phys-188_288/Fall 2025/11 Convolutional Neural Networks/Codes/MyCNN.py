@@ -27,7 +27,7 @@ class Read_Scale_Imds:
         
         self.minibatch_size = minibatch_size
         
-        my_path   = r'C:\yourdata\pet pics'
+        my_path   = r'C:\Users\MMH_user\Desktop\QBM\QBM\courses\Python\ANN\pet pics'
         form      = '.jpg'
 
         path_dogs = my_path + '\Dog\\' + '*' + form
@@ -136,7 +136,7 @@ class ConvLayer:
                 
         #######################################################################
         #according to http://vision.stanford.edu/cs598_spring07/papers/Lecun98.pdf
-        #not every of the six feature maps of C1 are connected to each of the
+        #not every of the six feature maps of C1 is connected to each of the
         #16 feature maps in C2 --> need a filter
         
         if numChan == 6 & NK == 16:

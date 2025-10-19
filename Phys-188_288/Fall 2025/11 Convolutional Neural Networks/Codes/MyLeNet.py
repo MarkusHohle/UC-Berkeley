@@ -50,7 +50,7 @@ class MyLeNet():
         
         
     def RunTraining(self, minibatch_size = 512, iterations = 10, epochs = 500,\
-                    learning_rate = 0.1, decay = 0.001, momentum = 0.5, saved_weights = False):
+                    learning_rate = 0.1, decay = 0.001, momentum = 0.5, saved_weights = "No"):
         
 ###############################################################################
         #initializing layers
@@ -75,7 +75,7 @@ class MyLeNet():
         #initializing optimizer
         optimizer       = Optimizer_SGD(learning_rate, decay, momentum)
         
-        if saved_weights:
+        if saved_weights != "No":
         #######################################################################
             ###calling weights/biases
             ##if weights:
