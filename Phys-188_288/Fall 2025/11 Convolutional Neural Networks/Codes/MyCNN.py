@@ -27,7 +27,7 @@ class Read_Scale_Imds:
         
         self.minibatch_size = minibatch_size
         
-        my_path   = r'C:\Users\MMH_user\Desktop\QBM\QBM\courses\Python\ANN\pet pics'
+        my_path   = r'C:\yourdata\pet pics'
         form      = '.jpg'
 
         path_dogs = my_path + '\Dog\\' + '*' + form

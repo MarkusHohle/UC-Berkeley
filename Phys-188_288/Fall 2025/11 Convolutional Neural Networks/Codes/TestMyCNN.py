@@ -5,7 +5,7 @@ Created on Fri Feb 23 01:05:02 2024
 @author: MMH_user
 """
 import matplotlib.pyplot as plt
-from MyANN import *
+from MyCNN import *
 
 read_and_scale = Read_Scale_Imds(5, [250,250])
 [M, C]         = read_and_scale.Read_Scale()
