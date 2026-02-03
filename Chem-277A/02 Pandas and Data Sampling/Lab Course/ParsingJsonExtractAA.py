@@ -29,7 +29,10 @@ AA3_TO_AA1_Dict    = {"Ala": "A", "Arg": "R", "Asn": "N", "Asp": "D",
 
 Convert_AA3_TO_AA1 = lambda AA: [AA3_TO_AA1_Dict[aa] for aa in AA]
 
-aa_seq_regex       = re.compile(r"(\d+)(([A-Z][a-z]{2}\s+)+[A-Z][a-z]{2})(\d+)")
+#aa_seq_regex       = re.compile(r"(\d+)(([A-Z][a-z]{2}\s+)+[A-Z][a-z]{2})(\d+)")
+#aa_seq_regex       = re.compile(r"(([A-Z][a-z]{2}\s+)+[A-Z][a-z]{2})")
+#aa_seq_regex       = re.compile(r"(\d+)(([A-Z][a-z]{2}\s+)+[A-Z][a-z]{2}\d+)")
+aa_seq_regex       = re.compile(r"(?<=\d)([A-Z][a-z]{2}(?:\s+[A-Z][a-z]{2})*)(?=\d)")
 
 #fuzzy search methods
 Methods            = ['ratio', 'partial_ratio',
@@ -83,14 +86,15 @@ class ParsingJsonExtractAA():
         
     def ExtractSeq(self, key: str = 'sequenceListNewRules') -> list:
 
-        Seq      = self.data[key]
-        #SeqSplit = Seq.split(' ')
+        Seq           = self.data[key]
+        self.SeqSplit = Seq.split(' ')
+        self.Seq      = Seq
 
         AA3    = aa_seq_regex.findall(Seq)
         AA_Seq = [None]*len(AA3)
 
         for i, aa3 in enumerate(AA3):
-            AA_Seq[i] = ''.join(Convert_AA3_TO_AA1(aa3[1].split(' ')))
+            AA_Seq[i] = ''.join(Convert_AA3_TO_AA1(aa3.split(' ')))
             
         return AA_Seq
     
