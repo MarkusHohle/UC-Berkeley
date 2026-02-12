@@ -1,0 +1,115 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jan 22 18:19:21 2026
+
+@author: MMH_user
+"""
+import re
+import json
+import numpy as np
+import pandas as pd
+
+from rapidfuzz import fuzz
+
+
+
+###############################################################################
+AA3_TO_AA1_Dict    = {"Ala": "A", "Arg": "R", "Asn": "N", "Asp": "D",
+                      "Cys": "C", "Gln": "Q", "Glu": "E", "Gly": "G",
+                      "His": "H", "Ile": "I", "Leu": "L", "Lys": "K",
+                      "Met": "M", "Phe": "F", "Pro": "P", "Ser": "S",
+                      "Thr": "T", "Trp": "W", "Tyr": "Y", "Val": "V"}
+
+Convert_AA3_TO_AA1 = lambda AA: [AA3_TO_AA1_Dict[aa] for aa in AA]
+
+Seq_regex          = re.compile(r'(\d+(?:PRT|DNA))') 
+                                                         
+AA_seq_regex       = re.compile(r"(?<=\d)([A-Z][a-z]{2}(?:\s+[A-Z][a-z]{2})*)(?=\d)")
+# DNA_seq_regex      = re.compile("your code here")
+
+#fuzzy search methods
+Methods            = ['ratio', 'partial_ratio', 'token_sort_ratio', 'token_set_ratio']
+###############################################################################
+
+###############################################################################
+def FuzzyMatch(series, search_string: str, method: str = 'partial_ratio', threshold: float = 80):
+    """
+    returns rows idx where fuzz search found match > threshold
+    methods: ratio
+             partial_ratio
+             token_sort_ratio
+             token_set_ratio
+    """
+    M         = getattr(fuzz, method)  # runs fuzz match
+    Mfun      = lambda x: M(x.lower(), search_string.lower()) >= threshold # defines function runs fuzz match and 
+                                                                           # returns True | False if match is above threshols 
+    TrueFalse = series.fillna("").astype(str).apply(Mfun) # applies Mfun to df column (which is a series)
+    
+    return np.argwhere(TrueFalse == True).reshape(-1)
+###############################################################################
+
+###############################################################################
+class ParsingJsonExtractSeq():
+    
+    def __init__(self, JsonFileName: str = 'US11591390B2.json',\
+                       Search_Str:   str = 'sequence'):
+        #load the file
+        with open(JsonFileName, 'r') as file:
+            data = json.load(file)
+            
+        #it is a dictionary:
+        #print(type(data))
+
+
+        Keys = pd.Series(data.keys())
+
+
+        for m in Methods:
+            idx = FuzzyMatch(Keys, Search_Str, method = m)
+            print('method: '+ m + '\n')
+            print('index and match: \n')
+            print(Keys[idx])
+            print('----------------------------------------------------\n')
+            print('----------------------------------------------------\n')
+            
+            
+        self.data = data
+        
+        
+    def ExtractSeq(self, key: str = 'sequenceListNewRules') -> list:
+
+        Seq      = self.data[key]
+        self.Seq = Seq
+        
+        """
+          
+          Your Code Here
+          
+          #Records  = Some RegEx (Seq)
+          
+        """
+
+        
+        #uncomment these lines
+        
+        # Records = [r.strip() for r in Records if r.strip()] #removing blanks
+        
+        # Info    = Records[1::2]
+        # ID      = Records[0::2]
+        
+        # Summary = [None]*len(ID) 
+        # ctDNA   = 0
+        # ctAA    = 0  
+        
+        # for i, (i_d, info) in enumerate(zip(ID, Info)):
+            
+        """
+          
+          Your Code Here
+          
+        """
+        
+    
+
+
+
