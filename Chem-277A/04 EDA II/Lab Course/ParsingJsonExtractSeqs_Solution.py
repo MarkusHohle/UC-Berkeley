@@ -124,7 +124,7 @@ class ParsingJsonExtractSeq():
                     startIdx   = S1.span()[0]               #start/end index as span
                     #AA1        =''.join(Convert_AA3_TO_AA1(S1.group().split(' ')))
                     AA1        =''.join(Convert_AA3_TO_AA1(S2))
-                    Text       = info[:startIdx+1]
+                    Text       = info[:startIdx]
                 else:
                     AA1  = info
                     Text = f'Sequence at location {i} could not be identified!\nCheck manually!'
@@ -143,7 +143,7 @@ class ParsingJsonExtractSeq():
                 if S:
                     ctDNA +=1 
                     startIdx   = S.span()[0]
-                    Text       = info[:startIdx+1]   
+                    Text       = info[:startIdx]   
                     DNA        = S.group().upper().split(' ')
                 else:
                     DNA  = info
