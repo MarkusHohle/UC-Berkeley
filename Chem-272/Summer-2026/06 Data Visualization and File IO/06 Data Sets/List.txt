@@ -1,0 +1,9 @@
+2024-2-Physics-77-4.pptx
+cystfibr.txt
+Data_set_0.csv
+Data_set_0.txt
+Data_set_0.xlsx
+List.txt
+my_timer.py
+ParseFiles.py
+raw.txt
