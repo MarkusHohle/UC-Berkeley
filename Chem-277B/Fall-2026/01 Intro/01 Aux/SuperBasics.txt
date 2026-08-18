@@ -1,0 +1,90 @@
+###works
+class C0():
+
+    def f0(self,a,b):
+        res = a * b
+        
+        #print(res)
+        
+        return res
+
+            
+class C1():
+
+    def f1(self,a,b):
+        res = a + b
+        
+        #print(res)
+        
+        return res
+        
+class C2(C1, C0):
+    
+    def f2(self,a,b,c,d):
+        res = super().f1(a,b)
+        print(c+d+res)
+######
+######
+
+##we can call all the methods, but f1 and f2 don't understand that they have been inherited
+class C0():
+
+    def f0(self,a,b):
+        res = a * b
+        
+        #print(res)
+        
+        return res
+
+            
+class C1():
+
+    def f1(self,a,b):
+        res = a + b
+        
+        #print(res)
+        
+        return res
+        
+class C2(C1, C0):
+    
+    def f2(self,a,b,c,d):
+        res = C1.f1(a,b)
+        print(c+d+res)
+        
+    def f3(self,a,b,c,d):
+        res = C0.f0(a,b)
+        print(c+d+res)
+
+###########################
+###########################
+
+##works again
+class C0():
+
+    def f0(self,a,b):
+        res = a * b
+        
+        #print(res)
+        
+        return res
+
+            
+class C1():
+
+    def f1(self,a,b):
+        res = a + b
+        
+        #print(res)
+        
+        return res
+        
+class C2(C1, C0):
+    
+    def f2(self,a,b,c,d):
+        #res = C1.f1(a,b)
+        print(a+b+c+d)
+        
+    def f3(self,a,b,c,d):
+        #res = C0.f0(a,b)
+        print(a*b*c*d)
